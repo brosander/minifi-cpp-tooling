@@ -8,7 +8,7 @@ BRANCH=""
 REPOSITORY="https://github.com/apache/nifi-minifi-cpp.git"
 
 function printUsageAndExit() {
-  echo "usage: docker run -ti [--rm] minifi-cpp-xenial-build [-r REPOSITORY] [-b BRANCH] [-p PR_NUMBER] [-c COMMAND_LINE]"
+  echo "usage: docker run -ti [--rm] IMAGE_NAME [-r REPOSITORY] [-b BRANCH] [-p PR_NUMBER] [-c COMMAND_LINE]"
   echo "       -h or --help          print this message and exit"
   echo "       -r or --repository    repository (default: $REPOSITORY)"
   echo "       -b or --branch        branch to build"
@@ -53,17 +53,22 @@ if [ ! -e "/source/nifi-minifi-cpp" ]; then
   mkdir /source/nifi-minifi-cpp
   cd /source/nifi-minifi-cpp
   git init
-  git checkout -B temporary-branch-that-shouldnt-exist
+  git config user.name "minifi-cpp-tooling"
+  git config user.email minifi-cpp-tooling@github.com
+  touch .gitignore
+  git add .gitignore
+  git commit -m "tmp"
+  git checkout -b temporary-branch-that-shouldnt-exist
+  git branch -D master
   git remote add origin "$REPOSITORY"
-fi
-
-if [ -n "$BRANCH" ]; then
-  git fetch origin "$BRANCH:$BRANCH" && git checkout "$BRANCH"
-  if [ -n "$PR" ]; then
-    git pull origin pull/"$PR"/head
+  if [ -n "$BRANCH" ]; then
+    git fetch origin "$BRANCH:$BRANCH" && git checkout "$BRANCH"
+    if [ -n "$PR" ]; then
+      git pull origin pull/"$PR"/head
+    fi
+  elif [ -n "$PR" ]; then
+    git fetch origin pull/"$PR"/head:pr"$PR" && git checkout pr"$PR"
   fi
-elif [ -n "$PR" ]; then
-  git fetch origin pull/"$PR"/head:pr"$PR" && git checkout pr"$PR"
 fi
 
 cd /build

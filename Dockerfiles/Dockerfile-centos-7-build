@@ -1,0 +1,36 @@
+FROM centos:7
+
+ARG UID=1000
+ARG GID=50
+
+RUN curl -o epel-release-7-9.noarch.rpm http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-9.noarch.rpm && \
+    rpm -ivh epel-release-7-9.noarch.rpm && \
+    rm epel-release-7-9.noarch.rpm && \
+    yum update -y && \
+    yum install -y \
+      git gdb make \
+      cmake3 \
+      gcc gcc-c++ \
+      libcurl-devel \
+      leveldb-devel leveldb \
+      libuuid libuuid-devel \
+      boost-devel \
+      openssl-devel \
+      doxygen && \
+    yum clean all
+
+RUN ln -s /bin/cmake3 /bin/cmake
+RUN groupadd -g $GID minifi || groupmod -n minifi `getent group $GID | cut -d: -f1` && \
+    useradd --shell /bin/bash -u $UID -g $GID -m minifi && \
+    mkdir -p /home/minifi && \
+    chown -R minifi:minifi /home/minifi
+
+ADD start.sh /home/minifi/
+RUN chown minifi:minifi /home/minifi/start.sh && \
+    chmod 500 /home/minifi/start.sh && \
+    mkdir /source && \
+    mkdir /build && \
+    chown -R minifi:minifi /build && \
+    chown -R minifi:minifi /source
+USER minifi
+ENTRYPOINT ["/home/minifi/start.sh"]

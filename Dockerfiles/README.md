@@ -1,8 +1,8 @@
 This is a docker container intended to make building and testing Apache MiNiFi C++ easier.
 ------------------------------------------------------------------------------------------
-Build image (one time)
+Build all images (one time)
 ```
-docker build -t minifi-cpp-xenial-build .
+./build-all.sh
 ```
 ```
 usage: docker run -ti [--rm] minifi-cpp-xenial-build [-r REPOSITORY] [-b BRANCH] [-p PR_NUMBER] [-c COMMAND_LINE]
