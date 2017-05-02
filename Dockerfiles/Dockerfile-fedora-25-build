@@ -1,0 +1,32 @@
+FROM fedora:25
+
+ARG UID=1000
+ARG GID=50
+
+RUN dnf update -y && \
+    dnf install -y \
+      git gdb make \
+      cmake \
+      gcc gcc-c++ \
+      libcurl-devel \
+      leveldb-devel leveldb \
+      libuuid libuuid-devel \
+      boost-devel \
+      openssl-devel \
+      doxygen && \
+    dnf clean all
+
+RUN groupadd -g $GID minifi || groupmod -n minifi `getent group $GID | cut -d: -f1` && \
+    useradd --shell /bin/bash -u $UID -g $GID -m minifi && \
+    mkdir -p /home/minifi && \
+    chown -R minifi:minifi /home/minifi
+
+ADD start.sh /home/minifi/
+RUN chown minifi:minifi /home/minifi/start.sh && \
+    chmod 500 /home/minifi/start.sh && \
+    mkdir /source && \
+    mkdir /build && \
+    chown -R minifi:minifi /build && \
+    chown -R minifi:minifi /source
+USER minifi
+ENTRYPOINT ["/home/minifi/start.sh"]
