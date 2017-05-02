@@ -6,6 +6,7 @@ ARG GID=50
 RUN apt-get update && \
     apt-get install -y \
       git \
+      gdb \
       cmake \
       gcc g++ \
       libcurl4-openssl-dev \
@@ -23,6 +24,8 @@ RUN groupadd -g $GID minifi || groupmod -n minifi `getent group $GID | cut -d: -
 ADD start.sh /home/minifi/
 RUN chown minifi:minifi /home/minifi/start.sh && chmod 500 /home/minifi/start.sh
 VOLUME /build
+VOLUME /source
 RUN chown minifi:minifi /build
+RUN chown minifi:minifi /source
 USER minifi
 ENTRYPOINT ["/home/minifi/start.sh"]
