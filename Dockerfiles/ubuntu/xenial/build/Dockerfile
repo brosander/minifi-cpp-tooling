@@ -22,10 +22,11 @@ RUN groupadd -g $GID minifi || groupmod -n minifi `getent group $GID | cut -d: -
     chown -R minifi:minifi /home/minifi
 
 ADD start.sh /home/minifi/
-RUN chown minifi:minifi /home/minifi/start.sh && chmod 500 /home/minifi/start.sh
-VOLUME /build
-VOLUME /source
-RUN chown minifi:minifi /build
-RUN chown minifi:minifi /source
+RUN chown minifi:minifi /home/minifi/start.sh && \
+    chmod 500 /home/minifi/start.sh && \
+    mkdir /source && \
+    mkdir /build && \
+    chown -R minifi:minifi /build && \
+    chown -R minifi:minifi /source
 USER minifi
 ENTRYPOINT ["/home/minifi/start.sh"]
