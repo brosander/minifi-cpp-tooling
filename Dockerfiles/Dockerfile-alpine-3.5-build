@@ -1,0 +1,34 @@
+FROM alpine:3.5
+
+ARG UID=1000
+ARG GID=50
+
+RUN apk update && \
+    apk del libressl-dev && \
+    apk add \
+      make \
+      git \
+      gdb \
+      cmake \
+      gcc g++ \
+      curl-dev \
+      util-linux-dev \
+      boost-dev libressl-dev \
+      doxygen && \
+    apk add leveldb-dev leveldb --update-cache --repository http://dl-3.alpinelinux.org/alpine/edge/testing && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN addgroup -g $GID minifi || groupmod -n minifi `getent group $GID | cut -d: -f1` && \
+    adduser -s /bin/sh -u $UID -G minifi -D minifi && \
+    mkdir -p /home/minifi && \
+    chown -R minifi:minifi /home/minifi
+
+ADD scripts/start.sh /home/minifi/
+RUN chown minifi:minifi /home/minifi/start.sh && \
+    chmod 500 /home/minifi/start.sh && \
+    mkdir /source && \
+    mkdir /build && \
+    chown -R minifi:minifi /build && \
+    chown -R minifi:minifi /source
+USER minifi
+ENTRYPOINT ["/home/minifi/start.sh"]

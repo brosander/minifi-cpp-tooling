@@ -25,7 +25,7 @@ RUN groupadd -g $GID minifi || groupmod -n minifi `getent group $GID | cut -d: -
     mkdir -p /home/minifi && \
     chown -R minifi:minifi /home/minifi
 
-ADD start.sh /home/minifi/
+ADD scripts/start.sh /home/minifi/
 RUN chown minifi:minifi /home/minifi/start.sh && \
     chmod 500 /home/minifi/start.sh && \
     mkdir /source && \

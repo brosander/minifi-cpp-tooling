@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 set -e
 
@@ -73,4 +73,4 @@ fi
 
 cd /build
 
-bash -c "$COMMAND"
+sh -c "$COMMAND"
