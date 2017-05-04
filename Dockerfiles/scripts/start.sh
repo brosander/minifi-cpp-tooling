@@ -7,7 +7,7 @@ PR=""
 BRANCH=""
 REPOSITORY="https://github.com/apache/nifi-minifi-cpp.git"
 
-function printUsageAndExit() {
+printUsageAndExit() {
   echo "usage: docker run -ti [--rm] IMAGE_NAME [-r REPOSITORY] [-b BRANCH] [-p PR_NUMBER] [-c COMMAND_LINE]"
   echo "       -h or --help          print this message and exit"
   echo "       -r or --repository    repository (default: $REPOSITORY)"

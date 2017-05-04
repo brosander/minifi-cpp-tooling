@@ -1,10 +1,9 @@
-FROM alpine:3.5
+FROM alpine:3.4
 
 ARG UID=1000
 ARG GID=50
 
 RUN apk update && \
-    apk del libressl-dev && \
     apk add \
       make \
       git \
@@ -13,7 +12,7 @@ RUN apk update && \
       gcc g++ \
       curl-dev \
       util-linux-dev \
-      boost-dev libressl-dev \
+      boost-dev openssl-dev \
       doxygen && \
     apk add leveldb-dev leveldb --update-cache --repository http://dl-3.alpinelinux.org/alpine/edge/testing && \
     rm -rf /var/lib/apt/lists/*
