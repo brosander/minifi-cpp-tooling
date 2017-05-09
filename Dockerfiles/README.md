@@ -1,32 +1,20 @@
 This is a docker container intended to make building and testing Apache MiNiFi C++ easier.
 ------------------------------------------------------------------------------------------
-Build all images (one time)
+Create image
 ```
-./build-all.sh
-```
-```
-usage: docker run -ti [--rm] minifi-cpp-xenial-build [-r REPOSITORY] [-b BRANCH] [-p PR_NUMBER] [-c COMMAND_LINE]
+minifi-cpp-tooling/Dockerfiles$ ./create-image.sh -h
+usage: docker run -ti [--rm] IMAGE_NAME [-r REPOSITORY] [-b BRANCH] [-p PR_NUMBER] [-c COMMAND_LINE]
        -h or --help          print this message and exit
+       -o or --os            operating system to build for (must have a build and run dockerfile in this directory) (default: ubuntu-xenial)
+       -t or --tarArchive    tar archive to build and package (will clone repo if not specified)
        -r or --repository    repository (default: https://github.com/apache/nifi-minifi-cpp.git)
        -b or --branch        branch to build
        -p or --pr            pr number to build
-       -c or --commandLine   command line to execute (default: "cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo /source/nifi-minifi-cpp && make && make test && make package")
+       -c or --commandLine   command line to execute (default: "(cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo /source/nifi-minifi-cpp && make && make test && make package) || bash")
 ```
 
-To build PR:
-Make an output directory
+Example:
 ```
-mkdir build
-```
-Run image with pr number
-```
-docker run -ti --rm -v "$(pwd)/build:/build" minifi-cpp-xenial-build -p PR_NUMBER
-```
-Run image with branch
-```
-docker run -ti --rm -v "$(pwd)/build:/build" minifi-cpp-xenial-build -b BRANCH
-```
-Run image with branch and pr number
-```
-docker run -ti --rm -v "$(pwd)/build:/build" minifi-cpp-xenial-build -b BRANCH -p PR_NUMBER
+./create-image.sh -t ~/Downloads/nifi-minifi-cpp-0.2.0-source.tar.gz -o centos-7
+docker run -ti --rm minifi-cpp-centos-7:0.2.0
 ```

@@ -1,0 +1,27 @@
+FROM ubuntu:xenial
+
+ARG MINIFI_BINARY
+ARG MINIFI_VERSION
+ARG UID=1000
+ARG GID=50
+
+RUN apt-get update && \
+    apt-get install -y \
+      libcurl3 \
+      libleveldb1v5 \
+      uuid \
+      libssl1.0.0 && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN groupadd -g $GID minifi || groupmod -n minifi `getent group $GID | cut -d: -f1` && \
+    useradd --shell /bin/bash -u $UID -g $GID -m minifi && \
+    mkdir -p /home/minifi && \
+    chown -R minifi:minifi /home/minifi
+
+ENV MINIFI_HOME /opt/minifi/nifi-minifi-cpp-$MINIFI_VERSION
+ADD $MINIFI_BINARY /opt/minifi
+
+RUN chown -R minifi:minifi /opt/minifi
+USER minifi
+WORKDIR $MINIFI_HOME
+CMD $MINIFI_HOME/bin/minifi.sh run

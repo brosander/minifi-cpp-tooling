@@ -5,7 +5,7 @@ ARG GID=50
 
 RUN dnf update -y && \
     dnf install -y \
-      git gdb make \
+      git gdb make findutils \
       cmake \
       gcc gcc-c++ \
       libcurl-devel \
