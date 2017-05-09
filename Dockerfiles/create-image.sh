@@ -2,7 +2,6 @@
 
 set -e
 
-COMMAND="(cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo /source/nifi-minifi-cpp && make && make test && make package) || bash"
 PR=""
 BRANCH=""
 REPOSITORY="https://github.com/apache/nifi-minifi-cpp.git"
@@ -10,14 +9,13 @@ TAR_ARCHIVE=""
 OS="ubuntu-xenial"
 
 printUsageAndExit() {
-  echo "usage: docker run -ti [--rm] IMAGE_NAME [-r REPOSITORY] [-b BRANCH] [-p PR_NUMBER] [-c COMMAND_LINE]"
+  echo "usage: $0 [-h] [-o OS] [-t TAR_ARCHIVE] [-r REPOSITORY] [-b BRANCH] [-p PR]"
   echo "       -h or --help          print this message and exit"
   echo "       -o or --os            operating system to build for (must have a build and run dockerfile in this directory) (default: $OS)"
   echo "       -t or --tarArchive    tar archive to build and package (will clone repo if not specified)"
   echo "       -r or --repository    repository (default: $REPOSITORY)"
   echo "       -b or --branch        branch to build"
   echo "       -p or --pr            pr number to build"
-  echo "       -c or --commandLine   command line to execute (default: \"$COMMAND\")"
   exit 1
 }
 
@@ -43,10 +41,6 @@ while [[ $# -ge 1 ]]; do
     ;;
     -p|--pr)
     PR="$2"
-    shift
-    ;;
-    -c|--commandLine)
-    COMMAND="$2"
     shift
     ;;
     -h|--help)
@@ -95,15 +89,18 @@ else
   git checkout -b temporary-branch-that-shouldnt-exist
   git branch -D master
   git remote add origin "$REPOSITORY"
-  if [ -n "$BRANCH" ]; then
+  if [ -n "$PR" ]; then
+    VERSION="pr$PR"
+    git fetch origin pull/"$PR"/head:pr"$PR" && git checkout pr"$PR"
+  else
+    if [ -z "$BRANCH" ]; then
+      BRANCH=master
+    fi
     VERSION="$BRANCH"
     git fetch origin "$BRANCH:$BRANCH" && git checkout "$BRANCH"
     if [ -n "$PR" ]; then
       git pull origin pull/"$PR"/head
     fi
-  elif [ -n "$PR" ]; then
-    VERSION="pr$PR"
-    git fetch origin pull/"$PR"/head:pr"$PR" && git checkout pr"$PR"
   fi
 fi
 
