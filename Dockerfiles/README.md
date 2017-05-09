@@ -1,4 +1,4 @@
-This is a docker container intended to make building and testing Apache MiNiFi C++ easier.
+This is a set of Dockerfiles and scripts intended to make building and testing Apache MiNiFi C++ easier.
 ------------------------------------------------------------------------------------------
 Create image
 ```
